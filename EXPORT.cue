@@ -25,9 +25,10 @@ import (
 	observables "greymatter.io.plus/services/observables:services"
 	edge "greymatter.io.plus/services/edge:services"
 	opa "greymatter.io.plus/services/opa:services"
+	ratelimit "greymatter.io.plus/services/ratelimiter:services"
 )
 
 configs:
 	// The edge config must come first because services create routes
 	// that reference the edge domain.
-	edge.Edge.config + observables.ObservablesApp.config + opa.OPA.config
+	edge.Edge.config + observables.ObservablesApp.config + opa.OPA.config + ratelimit.RateLimit.config

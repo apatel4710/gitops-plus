@@ -1,0 +1,88 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ratelimit
+  name: ratelimit
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ratelimit
+  template:
+    metadata:
+      labels:
+        app: ratelimit
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: ratelimit
+          image: "envoyproxy/ratelimit:v1.4.0"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: USE_STATSD
+            value: "false"
+          - name: LOG_LEVEL
+            value: "debug"
+          - name: REDIS_SOCKET_TYPE
+            value: "tcp"
+          - name: REDIS_URL
+            value: "localhost:10910"
+          - name: RUNTIME_ROOT
+            value: "/"
+          - name: RUNTIME_SUBDIRECTORY
+            value: "ratelimit"
+          command: ["/bin/sh","-c"]
+          args: ["mkdir -p /ratelimit/config && cp /data/ratelimit/config/config.yaml /ratelimit/config/config.yaml && cat /ratelimit/config/config.yaml &&  /bin/ratelimit"]
+          ports:
+            - name: server
+              containerPort: 8082
+            - name: debug
+              containerPort: 6070
+          volumeMounts:
+            - name: ratelimit-config
+              mountPath: /data/ratelimit/config
+              readOnly: true
+      volumes:
+        - name: ratelimit-config
+          configMap:
+            name: ratelimit
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ratelimit
+  labels:
+    app: ratelimit
+spec:
+  ports:
+    - name: server
+      port: 8082
+      protocol: TCP
+      targetPort: 8082
+    - name: debug
+      port: 6070
+      protocol: TCP
+      targetPort: 6070
+  selector:
+    app: ratelimit
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ratelimit
+  namespace: default
+data:
+  config.yaml: |-
+    ---
+    domain: edge
+    descriptors:
+      - key: path
+        value: "/"
+        rate_limit:
+          unit: second
+          requests_per_unit: 1

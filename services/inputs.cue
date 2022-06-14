@@ -28,6 +28,7 @@ defaults: {
 		observables_app_port:      5000
 		egress_elasticsearch_port: 443
 		opa_grpc_port:	           9191
+		ratelimit_port: 		   8082
 	}
 
 	edge: {
