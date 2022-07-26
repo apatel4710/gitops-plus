@@ -24,6 +24,8 @@ spec:
           image: "envoyproxy/ratelimit:v1.4.0"
           imagePullPolicy: IfNotPresent
           env:
+          - name: GRPC_PORT
+            value: "8888"
           - name: USE_STATSD
             value: "false"
           - name: LOG_LEVEL
