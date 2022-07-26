@@ -64,8 +64,7 @@ opa_config: [
 		mesh_id:                   mesh.metadata.name
 		service_id:                "opa"
 		version:                   "0.0.1"
-		description:               "A general-purpose policy engine unifying policy enforcement across a cloud 
-native environment"
+		description:               "A general-purpose policy engine unifying policy enforcement across a cloudnative environment"
 		api_endpoint:              ""
 		business_impact:           "critical"
 		enable_instance_metrics:   true
