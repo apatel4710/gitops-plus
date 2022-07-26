@@ -5,7 +5,7 @@ metadata:
   labels:
     app: ratelimit
   name: ratelimit
-  namespace: default
+  namespace: plus
 spec:
   replicas: 1
   selector:
@@ -13,6 +13,8 @@ spec:
       app: ratelimit
   template:
     metadata:
+      annotations:
+        greymatter.io/inject-sidecar-to: "8080"
       labels:
         app: ratelimit
     spec:
@@ -50,32 +52,11 @@ spec:
           configMap:
             name: ratelimit
 ---
-kind: Service
-apiVersion: v1
-metadata:
-  name: ratelimit
-  labels:
-    app: ratelimit
-spec:
-  ports:
-    - name: server
-      port: 8082
-      protocol: TCP
-      targetPort: 8082
-    - name: debug
-      port: 6070
-      protocol: TCP
-      targetPort: 6070
-  selector:
-    app: ratelimit
-  sessionAffinity: None
-  type: ClusterIP
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ratelimit
-  namespace: default
+  namespace: plus
 data:
   config.yaml: |-
     ---
