@@ -16,13 +16,15 @@ RateLimit: {
 ratelimit_config: [
 	// HTTP ingress
 	#domain & {domain_key: RateLimitIngressName},
-	
+
 	#cluster & {cluster_key: RateLimitIngressName, _upstream_port: defaults.ports.ratelimit_port},
     #listener & {
 		listener_key:          RateLimitIngressName
 		_is_ingress:           true
-        _tcp_upstream:         RateLimitIngressName
         _gm_observables_topic: Name
+		http2_protocol_options: {
+            allow_connect: true
+        }
 	},
 	#route & {route_key:     RateLimitIngressName},
 
@@ -43,7 +45,6 @@ ratelimit_config: [
 		_tcp_upstream: defaults.redis_cluster_name
 	},
 
-
 	// shared proxy object
 	#proxy & {
 		proxy_key: Name
@@ -51,26 +52,6 @@ ratelimit_config: [
 		listener_keys: [RateLimitIngressName, EgressToRedisName]
 	},
 
-	// Edge config for ratelimit_app ingress
-	#cluster & {
-		cluster_key:  Name
-		_spire_other: Name
-	},
-	#route & {
-		domain_key: "edge"
-		route_key:  Name
-		route_match: {
-			path: "/services/ratelimit/"
-		}
-		redirects: [
-			{
-				from:          "^/services/ratelimit$"
-				to:            route_match.path
-				redirect_type: "permanent"
-			},
-		]
-		prefix_rewrite: "/"
-	},
 
 	// Grey Matter Catalog service entry
 	greymatter.#CatalogService & {
@@ -79,7 +60,7 @@ ratelimit_config: [
 		service_id:                "ratelimit"
 		version:                   "0.0.1"
 		description:               ""
-		api_endpoint:              "/services/ratelimit"
+		api_endpoint:              ""
 		business_impact:           "critical"
 		enable_instance_metrics:   true
 		enable_historical_metrics: true
