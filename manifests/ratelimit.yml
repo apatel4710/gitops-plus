@@ -42,7 +42,7 @@ spec:
           args: ["mkdir -p /ratelimit/config && cp /data/ratelimit/config/config.yaml /ratelimit/config/config.yaml && cat /ratelimit/config/config.yaml &&  /bin/ratelimit"]
           ports:
             - name: server
-              containerPort: 8082
+              containerPort: 8888
             - name: debug
               containerPort: 6070
           volumeMounts:

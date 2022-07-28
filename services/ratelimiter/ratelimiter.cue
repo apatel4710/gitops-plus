@@ -17,16 +17,16 @@ ratelimit_config: [
 	// HTTP ingress
 	#domain & {domain_key: RateLimitIngressName},
 
-	#cluster & {cluster_key: RateLimitIngressName, _upstream_port: defaults.ports.ratelimit_port},
-    #listener & {
+	#cluster & {cluster_key: RateLimitIngressName, _upstream_port: defaults.ports.ratelimit_port
+		http2_protocol_options: {
+			allow_connect: true
+		}},
+	#listener & {
 		listener_key:          RateLimitIngressName
 		_is_ingress:           true
-        _gm_observables_topic: Name
-		http2_protocol_options: {
-            allow_connect: true
-        }
+		_gm_observables_topic: Name
 	},
-	#route & {route_key:     RateLimitIngressName},
+	#route & {route_key: RateLimitIngressName},
 
 	// egress->redis
 	#domain & {domain_key: EgressToRedisName, port: defaults.ports.redis_ingress},
@@ -51,7 +51,6 @@ ratelimit_config: [
 		domain_keys: [RateLimitIngressName, EgressToRedisName]
 		listener_keys: [RateLimitIngressName, EgressToRedisName]
 	},
-
 
 	// Grey Matter Catalog service entry
 	greymatter.#CatalogService & {
